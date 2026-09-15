@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi Perangkat Nagori Gunung Bayu</title>
+<style>
+:root{--primary:#0f766e;--primary2:#115e59;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--danger:#dc2626}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(135deg,#ecfeff,#f8fafc 45%,#e2e8f0);color:var(--text)}
+.container{max-width:1050px;margin:auto;padding:24px}.hero{background:linear-gradient(135deg,var(--primary2),var(--primary));color:white;border-radius:24px;padding:28px;box-shadow:0 15px 40px #0f766e2b;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:clamp(24px,4vw,36px)}.hero p{margin:4px 0;opacity:.9}.badge{display:inline-block;background:#ffffff20;border:1px solid #ffffff35;padding:7px 12px;border-radius:999px;font-size:13px;margin-top:12px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:0 8px 28px #0f172a0a}.card h2{font-size:20px;margin:0 0 18px}.field{margin-bottom:16px}.field label{display:block;font-weight:700;font-size:14px;margin-bottom:7px}input,select{width:100%;padding:12px 13px;border:1px solid var(--border);border-radius:12px;font:inherit;outline:none;background:#fff}input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #0f766e18}
+.photo{border:2px dashed #cbd5e1;border-radius:18px;min-height:330px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f8fafc;position:relative}.photo video,.photo img{width:100%;height:330px;object-fit:cover}.photo .placeholder{text-align:center;color:var(--muted);padding:25px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}button{border:0;border-radius:12px;padding:12px 17px;font:inherit;font-weight:700;cursor:pointer}.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}.secondary{background:#e2e8f0;color:#0f172a}.danger{background:#fee2e2;color:#991b1b}.status{margin-top:15px;padding:12px;border-radius:12px;display:none}.success{display:block;background:#dcfce7;color:#166534}.error{display:block;background:#fee2e2;color:#991b1b}.info{display:block;background:#e0f2fe;color:#075985}
+.clock{font-size:34px;font-weight:800;letter-spacing:1px}.date{color:var(--muted);margin-bottom:20px}.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat{padding:15px;background:#f8fafc;border-radius:14px;border:1px solid var(--border)}.stat b{display:block;font-size:22px}.small{font-size:12px;color:var(--muted)}.records{margin-top:20px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap}th{font-size:13px;color:var(--muted);background:#f8fafc}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}.selfie-note{font-size:12px;color:var(--muted);margin-top:7px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.container{padding:14px}.hero{padding:22px}.photo,.photo video,.photo img{height:280px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="hero">
+  <h1>Absensi Perangkat Nagori</h1>
+  <p><strong>Nagori Gunung Bayu</strong></p>
+  <p>Kecamatan Bosar Maligas • Kabupaten Simalungun</p>
+  <span class="badge">Sistem Absensi Digital</span>
+</header>
+
+<div class="grid">
+<section class="card">
+<h2>Form Absensi</h2>
+<div class="field"><label for="nama">Nama Lengkap</label><input id="nama" placeholder="Masukkan nama lengkap" autocomplete="name"></div>
+<div class="field"><label for="jabatan">Jabatan</label>
+<select id="jabatan"><option value="">Pilih jabatan</option><option>Pangulu Nagori</option><option>Sekretaris Nagori</option><option>Kaur Keuangan</option><option>Kaur Tata Usaha & Umum</option><option>Kasi Pemerintahan</option><option>Kasi Kesejahteraan</option><option>Kasi Pelayanan</option><option>Perangkat Nagori</option><option>Staf</option><option>Gamot</option><option>Lainnya</option></select></div>
+<div class="field"><label>Foto Selfie</label>
+<div class="photo" id="photoBox"><div class="placeholder">📷<br><strong>Ambil foto selfie</strong><br><span class="small">Izinkan akses kamera pada browser</span></div></div>
+<div class="actions"><button class="secondary" id="start">Buka Kamera</button><button class="primary" id="snap" disabled>Ambil Foto</button><button class="danger" id="retake" style="display:none">Foto Ulang</button></div>
+<p class="selfie-note">Foto digunakan sebagai bukti kehadiran pada perangkat yang digunakan untuk absensi.</p></div>
+<div class="field"><label for="jenis">Jenis Absensi</label><select id="jenis"><option>Masuk</option><option>Pulang</option></select></div>
+<button class="primary" id="submit" style="width:100%">✓ Simpan Absensi</button>
+<div class="status" id="status"></div>
+</section>
+
+<aside class="card">
+<h2>Waktu Absensi</h2>
+<div class="clock" id="clock">00:00:00</div><div class="date" id="date">-</div>
+<div class="summary"><div class="stat"><span class="small">Total Hari Ini</span><b id="total">0</b><span class="small">catatan</span></div><div class="stat"><span class="small">Status Terakhir</span><b id="last">-</b><span class="small" id="lastName">Belum ada absensi</span></div></div>
+<div class="records"><h2>Riwayat Absensi</h2><div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Nama</th><th>Jabatan</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+</aside>
+</div>
+
+<div class="card" style="margin-top:20px">
+<h2>Arsip Absensi Bulanan</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+  <div class="field" style="margin:0;min-width:220px;flex:1">
+    <label for="monthFilter">Pilih Bulan</label>
+    <select id="monthFilter"></select>
+  </div>
+  <button class="primary" id="printMonth">🖨 Cetak Bulan</button>
+  <button class="secondary" id="exportMonth">⬇ Ekspor CSV</button>
+</div>
+<div class="small" style="margin-top:10px">Data disimpan terpisah berdasarkan bulan pada penyimpanan browser perangkat ini.</div>
+<div class="table-wrap" style="margin-top:15px">
+<table><thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Nama</th><th>Jabatan</th><th>Status</th></tr></thead>
+<tbody id="monthRows"></tbody></table></div>
+</div>
+
+<footer>© 2026 Nagori Gunung Bayu • Kecamatan Bosar Maligas • Kabupaten Simalungun</footer>
+</div>
+<script>
+const $=id=>document.getElementById(id); let stream=null, photoData=null;
+function tick(){const d=new Date();$('clock').textContent=d.toLocaleTimeString('id-ID');$('date').textContent=d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+setInterval(tick,1000);tick();
+$('start').onclick=async()=>{try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});const v=document.createElement('video');v.autoplay=true;v.playsInline=true;v.srcObject=stream;$('photoBox').innerHTML='';$('photoBox').appendChild(v);$('snap').disabled=false;$('start').textContent='Kamera Aktif';msg('Kamera siap. Posisikan wajah lalu tekan “Ambil Foto”.','info')}catch(e){msg('Kamera tidak dapat diakses. Pastikan izin kamera diberikan dan gunakan HTTPS atau localhost.','error')}};
+$('snap').onclick=()=>{const v=$('photoBox').querySelector('video');const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);photoData=c.toDataURL('image/jpeg',.82);if(stream)stream.getTracks().forEach(t=>t.stop());const img=document.createElement('img');img.src=photoData;$('photoBox').innerHTML='';$('photoBox').appendChild(img);$('snap').disabled=true;$('retake').style.display='inline-block';$('start').textContent='Buka Kamera Lagi';msg('Foto selfie berhasil diambil.','success')};
+$('retake').onclick=()=>{$('retake').style.display='none';photoData=null;$('photoBox').innerHTML='<div class="placeholder">📷<br><strong>Ambil foto selfie</strong><br><span class="small">Klik “Buka Kamera” untuk mengambil foto</span></div>';};
+
+function getData(){return JSON.parse(localStorage.getItem('absensiGunungBayu')||'[]')}
+function monthKey(x){const d=new Date(x.iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function monthLabel(k){const [y,m]=k.split('-');return new Date(Number(y),Number(m)-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'})}
+function render(){
+ const data=getData(),today=new Date().toLocaleDateString('id-ID');
+ const rows=data.slice().reverse().map(x=>`<tr><td>${x.waktu}</td><td>${esc(x.nama)}</td><td>${esc(x.jabatan)}</td><td>${x.jenis}</td></tr>`).join('');
+ $('rows').innerHTML=rows||'<tr><td colspan="4" style="text-align:center;color:#64748b">Belum ada data absensi.</td></tr>';
+ $('total').textContent=data.filter(x=>x.tanggal===today).length;
+ const last=data[data.length-1];$('last').textContent=last?.jenis||'-';$('lastName').textContent=last?.nama||'Belum ada absensi';
+ renderMonths(data);
+}
+function renderMonths(data){
+ const keys=[...new Set(data.map(monthKey))].sort().reverse();
+ const sel=$('monthFilter'), old=sel.value;
+ sel.innerHTML=keys.map(k=>`<option value="${k}">${monthLabel(k)}</option>`).join('');
+ if(old&&keys.includes(old)) sel.value=old;
+ else if(!keys.length){const d=new Date();const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');sel.innerHTML=`<option value="${k}">${monthLabel(k)}</option>`}
+ renderMonthTable();
+}
+function renderMonthTable(){
+ const key=$('monthFilter').value, data=getData().filter(x=>monthKey(x)===key).sort((a,b)=>a.iso.localeCompare(b.iso));
+ $('monthRows').innerHTML=data.length?data.map((x,i)=>{const d=new Date(x.iso);return `<tr><td>${i+1}</td><td>${d.toLocaleDateString('id-ID')}</td><td>${d.toLocaleTimeString('id-ID')}</td><td>${esc(x.nama)}</td><td>${esc(x.jabatan)}</td><td>${x.jenis}</td></tr>`}).join(''):'<tr><td colspan="6" style="text-align:center;color:#64748b">Belum ada absensi pada bulan ini.</td></tr>';
+}
+$('monthFilter').onchange=renderMonthTable;
+$('submit').onclick=()=>{
+ const nama=$('nama').value.trim(),jabatan=$('jabatan').value;
+ if(!nama||!jabatan){msg('Nama dan jabatan wajib diisi.','error');return}
+ if(!photoData){msg('Silakan ambil foto selfie terlebih dahulu.','error');return}
+ const d=new Date(),data=getData();
+ data.push({nama,jabatan,jenis:$('jenis').value,waktu:d.toLocaleString('id-ID'),tanggal:d.toLocaleDateString('id-ID'),iso:d.toISOString(),foto:photoData});
+ localStorage.setItem('absensiGunungBayu',JSON.stringify(data));render();msg('Absensi berhasil disimpan dan masuk ke arsip bulan '+monthLabel(monthKey(data[data.length-1]))+'.','success');
+ $('nama').value='';$('jabatan').value='';photoData=null;$('retake').click()
+};
+$('printMonth').onclick=()=>{
+ const key=$('monthFilter').value,data=getData().filter(x=>monthKey(x)===key).sort((a,b)=>a.iso.localeCompare(b.iso));
+ const body=data.map((x,i)=>{const d=new Date(x.iso);return `<tr><td>${i+1}</td><td>${d.toLocaleDateString('id-ID')}</td><td>${d.toLocaleTimeString('id-ID')}</td><td>${esc(x.nama)}</td><td>${esc(x.jabatan)}</td><td>${x.jenis}</td></tr>`}).join('');
+ const w=window.open('','_blank');w.document.write(`<html><head><title>Rekap Absensi ${monthLabel(key)}</title><style>body{font-family:Arial;padding:30px;color:#111}h1{text-align:center;margin-bottom:5px}p{text-align:center;margin-top:4px}table{width:100%;border-collapse:collapse;margin-top:25px}th,td{border:1px solid #777;padding:8px;font-size:12px}th{background:#eee}.sign{margin-top:55px;text-align:right}</style></head><body><h1>REKAP ABSENSI PERANGKAT NAGORI</h1><p><b>Nagori Gunung Bayu</b><br>Kecamatan Bosar Maligas, Kabupaten Simalungun<br>Periode: ${monthLabel(key)}</p><table><thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Nama</th><th>Jabatan</th><th>Status</th></tr></thead><tbody>${body||'<tr><td colspan="6">Tidak ada data.</td></tr>'}</tbody></table><div class="sign">Gunung Bayu, __________________<br><br><br><b>Pangulu Nagori</b></div></body></html>`);w.document.close();w.focus();w.print();
+};
+$('exportMonth').onclick=()=>{
+ const key=$('monthFilter').value,data=getData().filter(x=>monthKey(x)===key).sort((a,b)=>a.iso.localeCompare(b.iso));
+ let csv='No,Tanggal,Jam,Nama,Jabatan,Status\n';
+ data.forEach((x,i)=>{const d=new Date(x.iso);csv+=`${i+1},"${d.toLocaleDateString('id-ID')}","${d.toLocaleTimeString('id-ID')}","${x.nama.replace(/"/g,'""')}","${x.jabatan.replace(/"/g,'""')}","${x.jenis}"\n`});
+ const blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8;'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Absensi_Gunung_Bayu_${key}.csv`;a.click();URL.revokeObjectURL(a.href);
+};
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+render();
+</script>
+</body>
+</html>
